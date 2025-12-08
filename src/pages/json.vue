@@ -1,0 +1,370 @@
+<script setup lang="ts">
+import { onCoreBoxInputChange } from '@talex-touch/utils/plugin/sdk'
+import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
+import { useJsonFormatter } from '~/composables/useJsonFormatter'
+
+defineOptions({
+  name: 'JsonPage',
+})
+
+// Use composable
+const {
+  inputJson,
+  outputJson,
+  outputLanguage,
+  queryExpression,
+  errorMessage,
+  isValidJson,
+  showToast,
+  toastMessage,
+  toastType,
+  showNotification,
+  formatJson,
+  minifyJson,
+  validateJson,
+  executeQuery,
+  toYaml,
+  toXml,
+  sortKeys,
+  escapeJson,
+  unescapeJson,
+  flattenJson,
+  diffJson,
+  pasteFromClipboard,
+  copyOutput,
+  swapEditors,
+  clearAll,
+} = useJsonFormatter()
+
+// Dark mode detection
+const isDark = useDark()
+const editorTheme = computed(() => isDark.value ? 'vs-dark' : 'vs')
+
+// Initialize Tuff hooks
+function initTuffHooks() {
+  try {
+    // Listen for input changes from CoreBox using SDK hook
+    onCoreBoxInputChange((data) => {
+      console.log('[JSON Formatter] Input change received:', data)
+      const text = data?.query?.text || ''
+      if (text) {
+        inputJson.value = text
+      }
+    })
+  }
+  catch (e) {
+    console.warn('[JSON Formatter] Tuff SDK not available:', e)
+  }
+}
+
+// Editor options
+const editorOptions = {
+  minimap: { enabled: false },
+  fontSize: 14,
+  lineNumbers: 'on' as const,
+  wordWrap: 'on' as const,
+  scrollBeyondLastLine: false,
+  automaticLayout: true,
+  tabSize: 2,
+  folding: true,
+  foldingStrategy: 'indentation' as const,
+  // Enable clipboard operations
+  copyWithSyntaxHighlighting: false,
+}
+
+// Handle editor mount to ensure paste works
+function onEditorMount(editor: any) {
+  // Focus the editor
+  editor.focus()
+
+  // Ensure paste action is available
+  editor.addAction({
+    id: 'paste-from-clipboard',
+    label: 'Paste',
+    keybindings: [
+      // Monaco KeyMod.CtrlCmd | Monaco KeyCode.KeyV
+      2048 | 52, // Ctrl/Cmd + V
+    ],
+    run: async () => {
+      try {
+        const text = await navigator.clipboard.readText()
+        const selection = editor.getSelection()
+        editor.executeEdits('paste', [{
+          range: selection,
+          text,
+          forceMoveMarkers: true,
+        }])
+      }
+      catch (e) {
+        console.warn('Paste failed:', e)
+      }
+    },
+  })
+}
+
+const outputEditorOptions = {
+  ...editorOptions,
+  readOnly: true,
+}
+
+// Watch input changes for auto-execution
+watch([inputJson, queryExpression], () => {
+  if (inputJson.value.trim()) {
+    executeQuery()
+  }
+  else {
+    outputJson.value = ''
+    errorMessage.value = ''
+    isValidJson.value = true
+  }
+}, { immediate: true })
+
+// Handle keyboard shortcuts
+function handleKeydown(e: KeyboardEvent) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault()
+    executeQuery()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+  initTuffHooks()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
+</script>
+
+<template>
+  <div h-full w-full flex flex-col>
+    <!-- Header -->
+    <header
+      flex="~ items-center justify-between"
+      h-9 shrink-0 border-b border-gray-200 px-3
+      dark:border-gray-700
+    >
+      <!-- Left: Input actions -->
+      <div flex="~ items-center gap-0.5">
+        <button class="toolbar-btn group" @click="pasteFromClipboard">
+          <div i-carbon-paste />
+          <span class="btn-text">粘贴</span>
+        </button>
+        <button class="toolbar-btn group" @click="formatJson">
+          <div i-carbon-code />
+          <span class="btn-text">格式化</span>
+        </button>
+        <button class="toolbar-btn group" @click="minifyJson">
+          <div i-carbon-minimize />
+          <span class="btn-text">压缩</span>
+        </button>
+        <button class="toolbar-btn group" @click="validateJson">
+          <div i-carbon-checkmark />
+          <span class="btn-text">验证</span>
+        </button>
+        <button class="toolbar-btn group" @click="sortKeys">
+          <div i-carbon-sort-ascending />
+          <span class="btn-text">排序</span>
+        </button>
+      </div>
+
+      <!-- Center: Convert actions -->
+      <div flex="~ items-center gap-0.5">
+        <button class="toolbar-btn group" @click="toYaml">
+          <div i-carbon-document />
+          <span class="btn-text">YAML</span>
+        </button>
+        <button class="toolbar-btn group" @click="toXml">
+          <div i-carbon-document-blank />
+          <span class="btn-text">XML</span>
+        </button>
+        <div class="toolbar-divider" />
+        <button class="toolbar-btn group" @click="escapeJson">
+          <div i-carbon-quotes />
+          <span class="btn-text">转义</span>
+        </button>
+        <button class="toolbar-btn group" @click="unescapeJson">
+          <div i-carbon-text-clear-format />
+          <span class="btn-text">反转义</span>
+        </button>
+        <div class="toolbar-divider" />
+        <button class="toolbar-btn group" @click="flattenJson">
+          <div i-carbon-flow />
+          <span class="btn-text">扁平化</span>
+        </button>
+        <button class="toolbar-btn group" @click="diffJson">
+          <div i-carbon-compare />
+          <span class="btn-text">对比</span>
+        </button>
+      </div>
+
+      <!-- Right: Output actions -->
+      <div flex="~ items-center gap-0.5">
+        <button class="toolbar-btn group" @click="copyOutput">
+          <div i-carbon-copy />
+          <span class="btn-text">复制</span>
+        </button>
+        <button class="toolbar-btn group" @click="swapEditors">
+          <div i-carbon-arrows-horizontal />
+          <span class="btn-text">交换</span>
+        </button>
+        <button class="toolbar-btn group" @click="clearAll">
+          <div i-carbon-trash-can />
+          <span class="btn-text">清空</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <div flex="~ 1" min-h-0 overflow-hidden>
+      <!-- Left: Input Editor -->
+      <div flex="~ col" w="1/2" border-r border-gray-200 dark:border-gray-700>
+        <VueMonacoEditor
+          v-model:value="inputJson"
+          language="json"
+          :theme="editorTheme"
+          :options="editorOptions"
+          class="h-full w-full"
+          @mount="onEditorMount"
+        />
+      </div>
+
+      <!-- Right: Output Editor -->
+      <div flex="~ col" w="1/2" relative>
+        <VueMonacoEditor
+          v-model:value="outputJson"
+          :language="outputLanguage"
+          :theme="editorTheme"
+          :options="outputEditorOptions"
+          class="h-full w-full"
+        />
+
+        <!-- Floating Toast Notification -->
+        <Transition name="toast">
+          <div
+            v-if="showToast || errorMessage"
+            fixed right-4 bottom-16 z-50
+            flex="~ items-center gap-2"
+            rounded-lg px-4 py-3 shadow-lg
+            :class="errorMessage
+              ? 'bg-red-500 text-white'
+              : toastType === 'success'
+                ? 'bg-green-500 text-white'
+                : 'bg-red-500 text-white'"
+          >
+            <div
+              :class="errorMessage
+                ? 'i-carbon-warning'
+                : toastType === 'success'
+                  ? 'i-carbon-checkmark-filled'
+                  : 'i-carbon-warning'"
+              text-lg
+            />
+            <span text-sm>{{ errorMessage || toastMessage }}</span>
+          </div>
+        </Transition>
+      </div>
+    </div>
+
+    <!-- Footer: Query Expression -->
+    <footer
+      flex="~ items-center gap-2"
+      h-10 shrink-0 border-t border-gray-200 px-4
+      dark:border-gray-700
+    >
+      <span text-sm text-gray-500>this</span>
+      <input
+        v-model="queryExpression"
+        type="text"
+        placeholder="Object.values(this).map(x=>x.map(y=>y.name))"
+        flex-1 rounded border border-gray-300 bg-transparent px-3 py-1 text-sm
+        outline-none
+        focus:border-blue-500
+        dark:border-gray-600
+      >
+
+      <!-- Status indicator -->
+      <div
+        v-if="inputJson.trim() && !errorMessage"
+        flex="~ items-center gap-1"
+        text-sm
+        :class="isValidJson ? 'text-green-500' : 'text-red-500'"
+      >
+        <div :class="isValidJson ? 'i-carbon-checkmark-filled' : 'i-carbon-close-filled'" text-base />
+        {{ isValidJson ? 'Valid JSON' : 'Invalid JSON' }}
+      </div>
+    </footer>
+  </div>
+</template>
+
+<style scoped>
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+  background: rgba(128, 128, 128, 0.12);
+  color: #333;
+  gap: 4px;
+}
+
+.toolbar-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-text {
+  max-width: 0;
+  opacity: 0;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.toolbar-btn:hover .btn-text {
+  max-width: 60px;
+  opacity: 1;
+}
+
+:root.dark .toolbar-btn {
+  color: #aaa;
+}
+
+:root.dark .toolbar-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 14px;
+  margin: 0 2px;
+  background: rgba(128, 128, 128, 0.25);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+</style>
+
+<route lang="yaml">
+meta:
+  layout: json
+</route>

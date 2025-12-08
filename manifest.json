@@ -1,0 +1,37 @@
+{
+  "id": "com.tuffex.json-formatter",
+  "name": "json-formatter",
+  "version": "1.0.0",
+  "icon": {
+    "type": "file",
+    "value": "assets/logo.svg"
+  },
+  "description": "一款全平台JSON格式化工具，支持多种格式化服务",
+  "dev": {
+    "enable": true,
+    "address": "http://localhost:5555/#/",
+    "source": true
+  },
+  "features": [
+    {
+      "id": "json-formatter-format",
+      "name": "JSON格式化",
+      "desc": "格式化选中的JSON文本或剪贴板内容",
+      "icon": {
+        "type": "file",
+        "value": "assets/logo.svg"
+      },
+      "platform": { "win32": true, "darwin": true, "linux": true },
+      "commands": [
+        {
+          "type": "over",
+          "value": ["json-formatter-format", "JSON格式化"]
+        }
+      ],
+      "interaction": {
+        "type": "webcontent",
+        "path": "/json"
+      }
+    }
+  ]
+}
