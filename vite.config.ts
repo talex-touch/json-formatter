@@ -1,5 +1,4 @@
 import path from 'node:path'
-import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import Shiki from '@shikijs/markdown-it'
 import TouchPluginExport from '@talex-touch/unplugin-export-plugin/vite'
 import { unheadVueComposablesImports } from '@unhead/vue'
@@ -17,7 +16,6 @@ import { VitePWA } from 'vite-plugin-pwa'
 import VueDevTools from 'vite-plugin-vue-devtools'
 import Layouts from 'vite-plugin-vue-layouts'
 import generateSitemap from 'vite-ssg-sitemap'
-import 'vitest/config'
 
 export default defineConfig({
   base: './',
@@ -56,7 +54,6 @@ export default defineConfig({
       include: [/\.[jt]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],
       imports: [
         'vue',
-        'vue-i18n',
         '@vueuse/core',
         unheadVueComposablesImports,
         VueRouterAutoImports,
@@ -68,7 +65,6 @@ export default defineConfig({
       dts: 'src/auto-imports.d.ts',
       dirs: [
         'src/composables',
-        'src/stores',
       ],
       vueTemplate: true,
     }),
@@ -138,23 +134,9 @@ export default defineConfig({
       },
     }),
 
-    // https://github.com/intlify/bundle-tools/tree/main/packages/unplugin-vue-i18n
-    VueI18n({
-      runtimeOnly: true,
-      compositionOnly: true,
-      fullInstall: true,
-      include: [path.resolve(__dirname, 'locales/**')],
-    }),
-
     // https://github.com/webfansplz/vite-plugin-vue-devtools
     VueDevTools(),
   ],
-
-  // https://github.com/vitest-dev/vitest
-  test: {
-    include: ['test/**/*.test.ts'],
-    environment: 'jsdom',
-  },
 
   // https://github.com/antfu/vite-ssg
   ssgOptions: {
@@ -170,6 +152,6 @@ export default defineConfig({
 
   ssr: {
     // TODO: workaround until they support native ESM
-    noExternal: ['workbox-window', /vue-i18n/],
+    noExternal: ['workbox-window'],
   },
 })
