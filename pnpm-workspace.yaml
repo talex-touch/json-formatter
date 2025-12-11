@@ -1,8 +1,12 @@
 packages: []
 
+catalog:
+  '@guolao/vue-monaco-editor': ^1.6.0
+  vue-sonner: ^2.0.9
+  yaml: ^2.8.2
+
 catalogs:
   build:
-    '@intlify/unplugin-vue-i18n': ^6.0.8
     '@shikijs/markdown-it': ^3.19.0
     '@unocss/eslint-config': ^66.5.10
     '@vitejs/plugin-vue': ^5.2.4
@@ -25,35 +29,27 @@ catalogs:
     vite-plugin-vue-layouts: ^0.11.0
     vite-ssg: ^26.1.1
     vite-ssg-sitemap: ^0.8.1
-  conflicts_conflicts_conflicts_dev_h1_2_8_h1_2_10_h1_2_14:
-    '@talex-touch/unplugin-export-plugin': ^1.2.14
 
   dev:
     '@antfu/eslint-config': ^4.19.0
     '@iconify-json/carbon': ^1.2.15
-    '@talex-touch/utils': ^1.0.40
+    '@talex-touch/unplugin-export-plugin': ^1.2.14
+    '@talex-touch/utils': ^1.0.42
     '@vue-macros/volar': ^3.1.1
-    '@vue/test-utils': ^2.4.6
-    cypress: ^14.5.4
-    cypress-vite: ^1.8.0
     eslint: ^9.39.1
-    eslint-plugin-cypress: ^4.3.0
     eslint-plugin-format: ^1.1.0
     https-localhost: ^4.7.1
     lint-staged: ^15.5.2
     simple-git-hooks: ^2.13.1
     taze: ^19.9.2
     typescript: ^5.9.3
-    vitest: ^3.2.4
     vue-tsc: ^2.2.12
   frontend:
     '@unhead/vue': ^2.0.19
     '@unocss/reset': ^66.5.10
     '@vueuse/core': ^13.9.0
     nprogress: ^0.2.0
-    pinia: ^3.0.4
     vue: ^3.5.25
-    vue-i18n: ^11.2.2
     vue-router: ^4.6.3
   types:
     '@types/markdown-it-link-attributes': ^3.0.5
@@ -63,7 +59,4 @@ onlyBuiltDependencies:
   - electron
   - esbuild
   - simple-git-hooks
-catalog:
-  '@guolao/vue-monaco-editor': ^1.6.0
-  vue-sonner: ^2.0.9
-  yaml: ^2.8.2
+  - vue-demi

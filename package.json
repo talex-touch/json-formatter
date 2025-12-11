@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "build": "vite-ssg build",
+    "build": "vite-ssg build && node scripts/fix-font-paths.mjs",
     "dev": "vite --port 5555 --open",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -14,8 +14,8 @@
     "sizecheck": "npx vite-bundle-visualizer"
   },
   "dependencies": {
-    "@guolao/vue-monaco-editor": "^1.6.0",
-    "@talex-touch/unplugin-export-plugin": "catalog:conflicts_conflicts_conflicts_dev_h1_2_8_h1_2_10_h1_2_14",
+    "@guolao/vue-monaco-editor": "catalog:",
+    "@talex-touch/unplugin-export-plugin": "catalog:dev",
     "@talex-touch/utils": "catalog:dev",
     "@unhead/vue": "catalog:frontend",
     "@unocss/reset": "catalog:frontend",
@@ -23,8 +23,8 @@
     "nprogress": "catalog:frontend",
     "vue": "catalog:frontend",
     "vue-router": "catalog:frontend",
-    "vue-sonner": "^2.0.9",
-    "yaml": "^2.8.2"
+    "vue-sonner": "catalog:",
+    "yaml": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",

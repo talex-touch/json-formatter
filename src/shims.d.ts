@@ -16,3 +16,11 @@ declare module '*.vue' {
   const component: DefineComponent<object, object, any>
   export default component
 }
+
+interface ImportMetaEnv {
+  readonly VITE_MONACO_VS_PATH?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

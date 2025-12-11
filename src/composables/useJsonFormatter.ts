@@ -46,7 +46,7 @@ export function smartParse(text: string): ParseResult {
       // Convert undefined identifiers to strings
       const reservedWords = ['true', 'false', 'null', 'undefined']
       trimmed = trimmed.replace(
-        /:\s*([A-Z_][A-Z0-9_]*)\s*([,}\]])/gi,
+        /:\s*([A-Z_]\w*)\s*([,}\]])/gi,
         (match, identifier, ending) => {
           if (reservedWords.includes(identifier.toLowerCase())) {
             return match
@@ -56,7 +56,7 @@ export function smartParse(text: string): ParseResult {
       )
 
       trimmed = trimmed.replace(
-        /:\s*([A-Z_][A-Z0-9_]*)\s*$/gim,
+        /:\s*([A-Z_]\w*)\s*$/gim,
         (match, identifier) => {
           if (reservedWords.includes(identifier.toLowerCase())) {
             return match

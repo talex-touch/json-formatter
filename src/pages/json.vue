@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { onCoreBoxInputChange } from '@talex-touch/utils/plugin/sdk'
-import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
+import type { Component } from 'vue'
+import { useCoreBoxInput } from '~/composables/useCoreBoxInput'
 import { useJsonFormatter } from '~/composables/useJsonFormatter'
 
 defineOptions({
   name: 'JsonPage',
 })
 
-// Use composable
+// Use composables
 const {
   inputJson,
   outputJson,
@@ -18,7 +18,6 @@ const {
   showToast,
   toastMessage,
   toastType,
-  showNotification,
   formatJson,
   minifyJson,
   validateJson,
@@ -36,25 +35,20 @@ const {
   clearAll,
 } = useJsonFormatter()
 
+// 监听 CoreBox 输入
+useCoreBoxInput((text) => {
+  inputJson.value = text
+})
+
 // Dark mode detection
 const isDark = useDark()
 const editorTheme = computed(() => isDark.value ? 'vs-dark' : 'vs')
+const MonacoEditor = shallowRef<Component | null>(null)
 
-// Initialize Tuff hooks
-function initTuffHooks() {
-  try {
-    // Listen for input changes from CoreBox using SDK hook
-    onCoreBoxInputChange((data) => {
-      console.log('[JSON Formatter] Input change received:', data)
-      const text = data?.query?.text || ''
-      if (text) {
-        inputJson.value = text
-      }
-    })
-  }
-  catch (e) {
-    console.warn('[JSON Formatter] Tuff SDK not available:', e)
-  }
+if (!import.meta.env.SSR) {
+  import('@guolao/vue-monaco-editor').then((mod) => {
+    MonacoEditor.value = mod.VueMonacoEditor
+  })
 }
 
 // Editor options
@@ -89,11 +83,13 @@ function onEditorMount(editor: any) {
       try {
         const text = await navigator.clipboard.readText()
         const selection = editor.getSelection()
-        editor.executeEdits('paste', [{
-          range: selection,
-          text,
-          forceMoveMarkers: true,
-        }])
+        editor.executeEdits('paste', [
+          {
+            range: selection,
+            text,
+            forceMoveMarkers: true,
+          },
+        ])
       }
       catch (e) {
         console.warn('Paste failed:', e)
@@ -108,16 +104,20 @@ const outputEditorOptions = {
 }
 
 // Watch input changes for auto-execution
-watch([inputJson, queryExpression], () => {
-  if (inputJson.value.trim()) {
-    executeQuery()
-  }
-  else {
-    outputJson.value = ''
-    errorMessage.value = ''
-    isValidJson.value = true
-  }
-}, { immediate: true })
+watch(
+  [inputJson, queryExpression],
+  () => {
+    if (inputJson.value.trim()) {
+      executeQuery()
+    }
+    else {
+      outputJson.value = ''
+      errorMessage.value = ''
+      isValidJson.value = true
+    }
+  },
+  { immediate: true },
+)
 
 // Handle keyboard shortcuts
 function handleKeydown(e: KeyboardEvent) {
@@ -129,7 +129,6 @@ function handleKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
-  initTuffHooks()
 })
 
 onUnmounted(() => {
@@ -142,7 +141,11 @@ onUnmounted(() => {
     <!-- Header -->
     <header
       flex="~ items-center justify-between"
-      h-9 shrink-0 border-b border-gray-200 px-3
+      h-9
+      shrink-0
+      border-b
+      border-gray-200
+      px-3
       dark:border-gray-700
     >
       <!-- Left: Input actions -->
@@ -220,7 +223,9 @@ onUnmounted(() => {
     <div flex="~ 1" min-h-0 overflow-hidden>
       <!-- Left: Input Editor -->
       <div flex="~ col" w="1/2" border-r border-gray-200 dark:border-gray-700>
-        <VueMonacoEditor
+        <component
+          :is="MonacoEditor"
+          v-if="MonacoEditor"
           v-model:value="inputJson"
           language="json"
           :theme="editorTheme"
@@ -232,7 +237,9 @@ onUnmounted(() => {
 
       <!-- Right: Output Editor -->
       <div flex="~ col" w="1/2" relative>
-        <VueMonacoEditor
+        <component
+          :is="MonacoEditor"
+          v-if="MonacoEditor"
           v-model:value="outputJson"
           :language="outputLanguage"
           :theme="editorTheme"
@@ -244,21 +251,31 @@ onUnmounted(() => {
         <Transition name="toast">
           <div
             v-if="showToast || errorMessage"
-            fixed right-4 bottom-16 z-50
             flex="~ items-center gap-2"
-            rounded-lg px-4 py-3 shadow-lg
-            :class="errorMessage
-              ? 'bg-red-500 text-white'
-              : toastType === 'success'
-                ? 'bg-green-500 text-white'
-                : 'bg-red-500 text-white'"
+            fixed
+            bottom-16
+            right-4
+            z-50
+            rounded-lg
+            px-4
+            py-3
+            shadow-lg
+            :class="
+              errorMessage
+                ? 'bg-red-500 text-white'
+                : toastType === 'success'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-red-500 text-white'
+            "
           >
             <div
-              :class="errorMessage
-                ? 'i-carbon-warning'
-                : toastType === 'success'
-                  ? 'i-carbon-checkmark-filled'
-                  : 'i-carbon-warning'"
+              :class="
+                errorMessage
+                  ? 'i-carbon-warning'
+                  : toastType === 'success'
+                    ? 'i-carbon-checkmark-filled'
+                    : 'i-carbon-warning'
+              "
               text-lg
             />
             <span text-sm>{{ errorMessage || toastMessage }}</span>
@@ -270,7 +287,11 @@ onUnmounted(() => {
     <!-- Footer: Query Expression -->
     <footer
       flex="~ items-center gap-2"
-      h-10 shrink-0 border-t border-gray-200 px-4
+      h-10
+      shrink-0
+      border-t
+      border-gray-200
+      px-4
       dark:border-gray-700
     >
       <span text-sm text-gray-500>this</span>
@@ -278,10 +299,17 @@ onUnmounted(() => {
         v-model="queryExpression"
         type="text"
         placeholder="Object.values(this).map(x=>x.map(y=>y.name))"
-        flex-1 rounded border border-gray-300 bg-transparent px-3 py-1 text-sm
+        flex-1
+        border
+        border-gray-300
+        rounded
+        bg-transparent
+        px-3
+        py-1
+        text-sm
         outline-none
-        focus:border-blue-500
         dark:border-gray-600
+        focus:border-blue-500
       >
 
       <!-- Status indicator -->
@@ -291,8 +319,11 @@ onUnmounted(() => {
         text-sm
         :class="isValidJson ? 'text-green-500' : 'text-red-500'"
       >
-        <div :class="isValidJson ? 'i-carbon-checkmark-filled' : 'i-carbon-close-filled'" text-base />
-        {{ isValidJson ? 'Valid JSON' : 'Invalid JSON' }}
+        <div
+          :class="isValidJson ? 'i-carbon-checkmark-filled' : 'i-carbon-close-filled'"
+          text-base
+        />
+        {{ isValidJson ? "Valid JSON" : "Invalid JSON" }}
       </div>
     </footer>
   </div>

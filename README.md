@@ -24,3 +24,8 @@ pnpm dev
 ```bash
 pnpm build
 ```
+
+## 更新记录
+
+- 2025-12-11: 修复 Monaco loader CDN 配置并在构建后自动矫正字体路径，避免插件内静态资源 404
+- 2025-12-09: 移除 vue-i18n 相关 catalog 与自动导入，保持依赖列表干净

@@ -13,24 +13,12 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import VueDevTools from 'vite-plugin-vue-devtools'
 import Layouts from 'vite-plugin-vue-layouts'
 import generateSitemap from 'vite-ssg-sitemap'
 
-export default defineConfig({
-  base: './',
-  resolve: {
-    alias: {
-      '~/': `${path.resolve(__dirname, 'src')}/`,
-    },
-  },
-
-  // Optimize Monaco Editor
-  optimizeDeps: {
-    include: ['monaco-editor'],
-  },
-
-  plugins: [
+export default defineConfig(async ({ command }) => {
+  const isBuild = command === 'build'
+  const plugins = [
     TouchPluginExport(),
     // https://github.com/posva/unplugin-vue-router
     VueRouter({
@@ -109,6 +97,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MiB
+      },
       manifest: {
         name: 'Vitesse',
         short_name: 'Vitesse',
@@ -133,25 +124,47 @@ export default defineConfig({
         ],
       },
     }),
+  ]
 
-    // https://github.com/webfansplz/vite-plugin-vue-devtools
-    VueDevTools(),
-  ],
+  if (!isBuild) {
+    const { default: VueDevTools } = await import('vite-plugin-vue-devtools')
+    plugins.push(VueDevTools())
+  }
 
-  // https://github.com/antfu/vite-ssg
-  ssgOptions: {
-    script: 'async',
-    formatting: 'minify',
-    beastiesOptions: {
-      reduceInlineStyles: false,
+  return {
+    base: './',
+    resolve: {
+      alias: {
+        '~/': `${path.resolve(__dirname, 'src')}/`,
+      },
     },
-    onFinished() {
-      generateSitemap()
-    },
-  },
 
-  ssr: {
-    // TODO: workaround until they support native ESM
-    noExternal: ['workbox-window'],
-  },
+    // Optimize Monaco Editor
+    optimizeDeps: {
+      include: ['monaco-editor'],
+    },
+
+    plugins,
+
+    // https://github.com/antfu/vite-ssg
+    ssgOptions: {
+      script: 'async',
+      formatting: 'minify',
+      beastiesOptions: {
+        reduceInlineStyles: false,
+      },
+      onFinished() {
+        generateSitemap()
+      },
+    },
+
+    ssr: {
+      // TODO: workaround until they support native ESM
+      noExternal: [
+        'workbox-window',
+        '@guolao/vue-monaco-editor',
+        'monaco-editor',
+      ],
+    },
+  }
 })
