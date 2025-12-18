@@ -2,6 +2,7 @@
 import type { Component } from 'vue'
 import { useCoreBoxInput } from '~/composables/useCoreBoxInput'
 import { useJsonFormatter } from '~/composables/useJsonFormatter'
+import { waitForMonacoReady } from '~/modules/monaco'
 
 defineOptions({
   name: 'JsonPage',
@@ -46,9 +47,11 @@ const editorTheme = computed(() => isDark.value ? 'vs-dark' : 'vs')
 const MonacoEditor = shallowRef<Component | null>(null)
 
 if (!import.meta.env.SSR) {
-  import('@guolao/vue-monaco-editor').then((mod) => {
-    MonacoEditor.value = mod.VueMonacoEditor
-  })
+  waitForMonacoReady()
+    .then(() => import('@guolao/vue-monaco-editor'))
+    .then((mod) => {
+      MonacoEditor.value = mod.VueMonacoEditor
+    })
 }
 
 // Editor options

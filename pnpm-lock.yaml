@@ -83,9 +83,6 @@ catalogs:
     '@talex-touch/unplugin-export-plugin':
       specifier: ^1.2.14
       version: 1.2.14
-    '@talex-touch/utils':
-      specifier: ^1.0.42
-      version: 1.0.42
     '@vue-macros/volar':
       specifier: ^3.1.1
       version: 3.1.1
@@ -156,7 +153,7 @@ importers:
         specifier: catalog:dev
         version: 1.2.14(chalk@5.4.1)(cli-progress@3.12.0)(compressing@1.10.3)(debug@4.4.3)(electron@37.7.0)(fs-extra@9.1.0)(pathe@2.0.3)(unplugin@2.3.11)(vue@3.5.22(typescript@5.9.2))
       '@talex-touch/utils':
-        specifier: catalog:dev
+        specifier: ^1.0.42
         version: 1.0.42(electron@37.7.0)(vue@3.5.22(typescript@5.9.2))
       '@unhead/vue':
         specifier: catalog:frontend
