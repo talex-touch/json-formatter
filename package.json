@@ -1,5 +1,7 @@
 {
+  "name": "json-formatter",
   "type": "module",
+  "version": "1.0.4",
   "private": true,
   "packageManager": "pnpm@10.24.0",
   "scripts": {
