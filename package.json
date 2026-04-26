@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "build": "vite-ssg build && node scripts/fix-font-paths.mjs",
+    "build": "vite-ssg build && node scripts/fix-font-paths.mjs && tuff builder",
     "dev": "vite --port 5555 --open",
     "lint": "eslint .",
     "preview": "vite preview",

@@ -1,3 +1,4 @@
+import type { PluginOption, UserConfig } from 'vite'
 import path from 'node:path'
 import Shiki from '@shikijs/markdown-it'
 import TouchPluginExport from '@talex-touch/unplugin-export-plugin/vite'
@@ -18,7 +19,7 @@ import generateSitemap from 'vite-ssg-sitemap'
 
 export default defineConfig(async ({ command }) => {
   const isBuild = command === 'build'
-  const plugins = [
+  const plugins: PluginOption[] = [
     TouchPluginExport(),
     // https://github.com/posva/unplugin-vue-router
     VueRouter({
@@ -131,7 +132,7 @@ export default defineConfig(async ({ command }) => {
     plugins.push(VueDevTools())
   }
 
-  return {
+  const config: UserConfig = {
     base: './',
     resolve: {
       alias: {
@@ -167,4 +168,6 @@ export default defineConfig(async ({ command }) => {
       ],
     },
   }
+
+  return config
 })

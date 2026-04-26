@@ -10,7 +10,6 @@
       "~/*": ["src/*"]
     },
     "resolveJsonModule": true,
-    "typeRoots": ["./src/types", "./node_modules/@types"],
     "types": [
       "vitest",
       "vite/client",

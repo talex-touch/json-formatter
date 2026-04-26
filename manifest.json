@@ -1,7 +1,9 @@
 {
   "id": "com.tuffex.json-formatter",
   "name": "json-formatter",
-  "version": "1.0.2",
+  "version": "1.0.3",
+  "sdkapi": 260428,
+  "category": "utilities",
   "icon": {
     "type": "file",
     "value": "assets/logo.svg"

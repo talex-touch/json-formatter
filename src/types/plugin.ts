@@ -6,11 +6,11 @@
 // Import types from @talex-touch/utils
 export type {
   IPluginFeature,
-  IPluginIcon,
   IPluginLifecycle,
   IPluginUtils,
   ISearchManager,
   IStorageManager,
+  ITuffIcon,
 } from '@talex-touch/utils'
 
 // Re-export types for use in JSDoc
