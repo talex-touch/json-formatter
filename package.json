@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "build": "vite-ssg build && node scripts/fix-font-paths.mjs && tuff builder",
+    "build": "vite-ssg build && node scripts/fix-font-paths.mjs && node /Users/talexdreamsoul/Workspace/Projects/talex-touch/packages/tuff-cli/bin/tuff.js builder",
     "dev": "vite --port 5555 --open",
     "lint": "eslint .",
     "preview": "vite preview",
