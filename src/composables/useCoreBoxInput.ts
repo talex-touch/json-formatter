@@ -1,4 +1,4 @@
-import { onCoreBoxInputChange } from '@talex-touch/utils/plugin/sdk'
+import { onCoreBoxInputChange, useBox } from '@talex-touch/utils/plugin/sdk'
 
 /**
  * 从 CoreBox SDK 事件中提取文本内容
@@ -43,4 +43,16 @@ export function useCoreBoxInput(onInput: (text: string) => void) {
       console.error('[useCoreBoxInput] Error:', e)
     }
   })
+}
+
+/**
+ * 请求 CoreBox 使用最大展开高度展示编辑器界面
+ */
+export async function forceMaxCoreBox() {
+  try {
+    await useBox().expand({ forceMax: true })
+  }
+  catch (e) {
+    console.warn('[useCoreBoxInput] Expand failed:', e)
+  }
 }

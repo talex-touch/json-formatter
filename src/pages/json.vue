@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { useCoreBoxInput } from '~/composables/useCoreBoxInput'
+import { forceMaxCoreBox, useCoreBoxInput } from '~/composables/useCoreBoxInput'
 import { useJsonFormatter } from '~/composables/useJsonFormatter'
 import { waitForMonacoReady } from '~/modules/monaco'
 
@@ -132,6 +132,7 @@ function handleKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  void forceMaxCoreBox()
 })
 
 onUnmounted(() => {

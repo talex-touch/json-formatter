@@ -83,6 +83,9 @@ catalogs:
     '@talex-touch/unplugin-export-plugin':
       specifier: ^1.2.14
       version: 1.2.14
+    '@talex-touch/utils':
+      specifier: ^1.0.42
+      version: 1.0.42
     '@vue-macros/volar':
       specifier: ^3.1.1
       version: 3.1.1
@@ -153,7 +156,7 @@ importers:
         specifier: catalog:dev
         version: 1.2.14(chalk@5.4.1)(cli-progress@3.12.0)(compressing@1.10.3)(debug@4.4.3)(electron@37.7.0)(fs-extra@9.1.0)(pathe@2.0.3)(unplugin@2.3.11)(vue@3.5.22(typescript@5.9.2))
       '@talex-touch/utils':
-        specifier: ^1.0.42
+        specifier: catalog:dev
         version: 1.0.42(electron@37.7.0)(vue@3.5.22(typescript@5.9.2))
       '@unhead/vue':
         specifier: catalog:frontend
@@ -3683,7 +3686,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   global-agent@3.0.0:
     resolution: {integrity: sha512-PT6XReJ+D07JvGoxQMkT6qji/jVNfX/h364XHZOWeRzy64sSFr+xJ5OX7LI3b4MPQzdL4H8Y8M0xzPpsVMwA8Q==}

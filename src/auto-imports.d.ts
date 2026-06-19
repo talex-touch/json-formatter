@@ -38,6 +38,7 @@ declare global {
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const flattenObject: typeof import('./composables/useJsonFormatter')['flattenObject']
+  const forceMaxCoreBox: typeof import('./composables/useCoreBoxInput')['forceMaxCoreBox']
   const getActiveHead: typeof import('@unhead/vue')['getActiveHead']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
@@ -361,6 +362,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly flattenObject: UnwrapRef<typeof import('./composables/useJsonFormatter')['flattenObject']>
+    readonly forceMaxCoreBox: UnwrapRef<typeof import('./composables/useCoreBoxInput')['forceMaxCoreBox']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
