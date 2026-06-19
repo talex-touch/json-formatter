@@ -14,7 +14,7 @@
     "up": "taze major -I",
     "postinstall": "npx simple-git-hooks",
     "sizecheck": "npx vite-bundle-visualizer",
-    "publish:nexus": "tuff publish --channel RELEASE"
+    "publish:nexus": "node /Users/talexdreamsoul/Workspace/Projects/talex-touch/packages/tuff-cli/bin/tuff.js publish --channel RELEASE"
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "catalog:",
